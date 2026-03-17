@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://b1beifh2xohy4"]
 
+[ext_resource type="Script" uid="uid://cixdkd3ovbmgp" path="res://scripts/core/flower.gd" id="1_idgqj"]
+
 [node name="Flower" type="Node2D" unique_id=1992611820 groups=["flowers"]]
+script = ExtResource("1_idgqj")
 
 [node name="Placeholder" type="ColorRect" parent="." unique_id=1054087275]
 offset_right = 48.0
