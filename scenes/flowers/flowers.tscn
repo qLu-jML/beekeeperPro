@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://b1beifh2xohy4"]
+
+[node name="Flower" type="Node2D" unique_id=1992611820 groups=["flowers"]]
+
+[node name="Placeholder" type="ColorRect" parent="." unique_id=1054087275]
+offset_right = 48.0
+offset_bottom = 48.0
+color = Color(0.73553485, 0.56288195, 0.09318047, 1)
+
+[node name="StageLabel" type="Label" parent="Placeholder" unique_id=2056060674]
+layout_mode = 0
+offset_right = 48.0
+offset_bottom = 48.0
+text = "Seed"
+horizontal_alignment = 1
+vertical_alignment = 1
