@@ -1,27 +1,23 @@
-extends CharacterBody2D  # Change to CharacterBody2D in Godot 4.0
+extends CharacterBody2D
 
-# Speed variable to control movement speed
 var speed = 200
-var player_velocity = Vector2.ZERO  # Rename this variable
+var player_velocity = Vector2.ZERO
 
 func _ready():
-	$PlayerAnimatedSprite.play("Idle")  # Start with Idle animation
+	$PlayerAnimatedSprite.play("idle")  # Ensure this matches your animation name
 
-func _process(delta):
-	player_velocity = Vector2.ZERO  # Reset player_velocity each frame
+func _input(event):
+	var input_vector = Vector2.ZERO
+	if event.is_action_pressed("move_right"):
+		input_vector.x += 1
+	elif event.is_action_pressed("move_left"):
+		input_vector.x -= 1
+	elif event.is_action_pressed("move_down"):
+		input_vector.y += 1
+	elif event.is_action_pressed("move_up"):
+		input_vector.y -= 1
+	
+	player_velocity = input_vector.normalized() * speed
 
-	# Input handling for movement
-	if Input.is_action_pressed("ui_right"):
-		player_velocity.x += 1
-	if Input.is_action_pressed("ui_left"):
-		player_velocity.x -= 1
-	if Input.is_action_pressed("ui_down"):
-		player_velocity.y += 1
-	if Input.is_action_pressed("ui_up"):
-		player_velocity.y -= 1
-
-	# Normalize the velocity to maintain consistent speed
-	player_velocity = player_velocity.normalized() * speed
-
-	# Move the player and slide along surfaces
-	move_and_slide()  # No arguments needed
+func _physics_process(delta):
+	move_and_slide(player_velocity)
