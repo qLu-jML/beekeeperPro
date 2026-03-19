@@ -9,7 +9,14 @@ func _ready():
 func update_appearance():
 	var stage_label = get_node("Placeholder/StageLabel")
 	if stage_label != null:
-		stage_label.text = "Current Day: %d" % current_day
+		if current_day < 2:
+			stage_label.text = "Seed"
+		elif current_day < 7:
+			stage_label.text = "Sprout"
+		elif current_day < 10:
+			stage_label.text = "Growing"
+		else:
+			stage_label.text = "Mature"
 	else:
 		print("ERROR: StageLabel not found!")
 

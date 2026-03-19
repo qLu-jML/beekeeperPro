@@ -19,4 +19,17 @@ texture = SubResource("PlaceholderTexture2D_c8g37")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=120594544]
 shape = SubResource("RectangleShape2D_8u5me")
 
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("RectangleShape2D_8u5me")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -30.0
+offset_top = -40.0
+offset_right = 30.0
+offset_bottom = -17.0
+horizontal_alignment = 1
+scale = Vector2(0.5, 0.5)
+
 [connection signal="input_event" from="Area2D" to="." method="_on_area_2d_input_event"]

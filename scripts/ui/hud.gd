@@ -13,8 +13,7 @@ func _ready() -> void:
 	print("NextDayButton: ", next_day_button)
 	
 	if not hive:
-		push_error("Hive not found at ../World/Hive")
-		return
+		print("Warning: Single Hive not found at ../World/Hive. Operating in multi-hive mode.")
 	
 	if next_day_button:
 		# Safety: disconnect old if any
@@ -32,7 +31,14 @@ func _ready() -> void:
 func _on_next_day_button_pressed() -> void:
 	print("BUTTON CLICK DETECTED - advancing world")
 	
-	hive.advance_day()
+	if hive:
+		hive.advance_day()
+	else:
+		var world_node = get_node_or_null("../World")
+		if world_node:
+			for child in world_node.get_children():
+				if "Hive" in child.name and child.has_method("advance_day"):
+					child.advance_day()
 	
 	var flowers = get_tree().get_nodes_in_group("flowers")
 	print("=== FLOWER CHECK ===")
@@ -49,22 +55,43 @@ func _on_next_day_button_pressed() -> void:
 
 
 func _update_ui_labels() -> void:
-	print("Updating UI labels - day: ", hive.days_elapsed)
+	var current_hive = hive
 	
-	if day_label:
-		day_label.text = "Day: %d - %s" % [hive.days_elapsed, get_season_name()]
+	if not current_hive:
+		var world_node = get_node_or_null("../World")
+		if world_node:
+			for child in world_node.get_children():
+				if "Hive" in child.name:
+					current_hive = child
+					break
 	
-	if resource_label:
-		resource_label.text = "Population: %d bees\nHoney: %.1f lbs\nPollen: %.1f lbs\nBrood: %d cells" % [
-			hive.colony_population,
-			hive.honey_stores,
-			hive.pollen_stores,
-			hive.brood_count
-		]
+	if current_hive:
+		print("Updating UI labels - day: ", current_hive.days_elapsed)
+		
+		if day_label:
+			day_label.text = "Day: %d - %s" % [current_hive.days_elapsed, get_season_name(current_hive)]
+		
+		if resource_label:
+			resource_label.text = ""
+	else:
+		if day_label:
+			day_label.text = "Day: ?"
+		if resource_label:
+			resource_label.text = ""
 
+@onready var inventory_label: Label = get_node_or_null("PlayerInventoryLabel")
 
-func get_season_name() -> String:
-	var day_in_year = hive.days_elapsed % 120
+func update_player_inventory(amount: float) -> void:
+	if inventory_label:
+		inventory_label.text = "Honey Storage: %.1f lbs" % amount
+
+func get_season_name(target_hive = null) -> String:
+	if not target_hive:
+		target_hive = hive
+	if not target_hive:
+		return "Unknown"
+	
+	var day_in_year = target_hive.days_elapsed % 120
 	if day_in_year < 30:
 		return "Spring"
 	elif day_in_year < 60:

@@ -23,11 +23,27 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Player" type="Node2D" unique_id=1551162531]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_dovo2"]
 
-[node name="player" type="CharacterBody2D" parent="." unique_id=1424082801]
+[node name="player" type="CharacterBody2D" unique_id=1424082801]
 script = ExtResource("1_dovo2")
 
-[node name="PlayerAnimatedSprite" type="AnimatedSprite2D" parent="player" unique_id=2071966950]
+[node name="PlayerAnimatedSprite" type="AnimatedSprite2D" parent="." unique_id=2071966950]
 sprite_frames = SubResource("SpriteFrames_gmlin")
 animation = &"idle"
+
+[node name="Player" type="Node2D" parent="." unique_id=1551162531]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1569042348]
+shape = SubResource("CapsuleShape2D_dovo2")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.35, 1.35)
+position_smoothing_enabled = true
+position_smoothing_speed = 5.0
+drag_horizontal_enabled = true
+drag_vertical_enabled = true
+drag_left_margin = 0.2
+drag_top_margin = 0.2
+drag_right_margin = 0.2
+drag_bottom_margin = 0.2
