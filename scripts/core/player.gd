@@ -24,13 +24,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_parent().add_child(new_hive)
 		elif event.keycode == KEY_T:
 			if tilemap:
-				var target_pos = global_position + (facing_direction * 16.0)
-				var map_coords = tilemap.local_to_map(tilemap.to_local(target_pos))
+				var map_coords = get_target_tile_coords(tilemap)
 				tilemap.set_cell(1, map_coords, 0, Vector2i(1, 3))
 		elif event.keycode == KEY_F:
 			if tilemap:
-				var target_pos = global_position + (facing_direction * 16.0)
-				var map_coords = tilemap.local_to_map(tilemap.to_local(target_pos))
+				var map_coords = get_target_tile_coords(tilemap)
 				
 				# Determine if ground is dirt (Layer 1 has a tile)
 				if tilemap.get_cell_source_id(1, map_coords) != -1:
@@ -41,14 +39,14 @@ func _unhandled_input(event: InputEvent) -> void:
 					print("You must plant seeds on tilled dirt!")
 		elif event.keycode == KEY_E:
 			if tilemap:
-				var target_pos = global_position + (facing_direction * 16.0)
-				var map_coords = tilemap.local_to_map(tilemap.to_local(target_pos))
+				var map_coords = get_target_tile_coords(tilemap)
 				var target_global = tilemap.to_global(tilemap.map_to_local(map_coords))
 				
 				var hives = get_tree().get_nodes_in_group("hive")
 				var harvested = false
 				for hive in hives:
-					if hive.global_position.distance_to(target_global) < 16.0:
+					# Large 32px tolerance guarantees overlapping any part of the 32x32 hive sprite triggers success
+					if hive.global_position.distance_to(target_global) < 32.0:
 						if hive.has_method("harvest_honey"):
 							var amount = hive.harvest_honey()
 							if amount > 0:
@@ -68,6 +66,28 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _ready():
 	pass
+
+func get_target_tile_coords(map: TileMap) -> Vector2i:
+	# Convert geometric bounds safely into grid tile coordinate space natively
+	var left = int((global_position.x - 7) / 16.0)
+	var right = int((global_position.x + 7) / 16.0)
+	var top = int((global_position.y - 23) / 16.0)
+	var bottom = int((global_position.y + 7) / 16.0)
+	
+	var target_x = int(global_position.x / 16.0)
+	var target_y = bottom
+	
+	if facing_direction.x > 0:
+		target_x = right + 1
+	elif facing_direction.x < 0:
+		target_x = left - 1
+		
+	if facing_direction.y > 0:
+		target_y = bottom + 1
+	elif facing_direction.y < 0:
+		target_y = top - 1
+		
+	return Vector2i(target_x, target_y)
 
 func _physics_process(delta):
 	# Get input direction

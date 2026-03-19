@@ -55,9 +55,17 @@ func advance_day() -> void:
 	if drone > 0:
 		drone -= int(drone * 0.05)
 	
-	# Resource consumption
-	honey_stores -= 0.5
+	# Resource gathering and consumption
+	var daily_nectar = workerBee * 0.0005 # Workers forage for nectar
+	var daily_consumption = colony_population * 0.0001 # Everyone eats
+	
+	honey_stores += daily_nectar - daily_consumption
+	if honey_stores < 0.0:
+		honey_stores = 0.0
+		
 	pollen_stores -= 0.2
+	if pollen_stores < 0.0:
+		pollen_stores = 0.0
 	
 	update_label()
 	day_advanced.emit(days_elapsed)

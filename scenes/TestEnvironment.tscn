@@ -725,13 +725,13 @@ offset_left = 6.0
 offset_top = 6.0
 offset_right = 54.0
 offset_bottom = 29.0
-scale = Vector2(0.35, 0.35)
+scale = Vector2(0.2, 0.2)
 text = "Day: 0"
 
 [node name="ResourceLabel" type="Label" parent="UI" unique_id=1451881323]
 offset_left = 6.0
 offset_top = 40.0
-scale = Vector2(0.35, 0.35)
+scale = Vector2(0.2, 0.2)
 offset_right = 46.0
 offset_bottom = 63.0
 
@@ -740,7 +740,7 @@ offset_left = 6.0
 offset_top = 18.0
 offset_right = 110.0
 offset_bottom = 49.0
-scale = Vector2(0.35, 0.35)
+scale = Vector2(0.2, 0.2)
 action_mode = 0
 text = "Advance Day"
 
@@ -749,20 +749,31 @@ offset_left = 6.0
 offset_top = 50.0
 offset_right = 200.0
 offset_bottom = 200.0
-scale = Vector2(0.35, 0.35)
+scale = Vector2(0.2, 0.2)
 text = "Controls:
-W/A/S/D - Move
+Arrows - Move
 G - Toggle Grid
 T - Till Dirt
 F - Plant Seed
 H - Place Hive
-E - Interact"
+E - Interact
+O - Open Menu"
 
-[node name="PlayerInventoryLabel" type="Label" parent="UI" unique_id=532890123]
-offset_left = 6.0
-offset_top = 210.0
-offset_right = 160.0
-offset_bottom = 233.0
+[node name="InventoryMenu" type="ColorRect" parent="UI" unique_id=882319082]
+visible = false
+offset_right = 1152.0
+offset_bottom = 648.0
+color = Color(0.1, 0.1, 0.1, 0.8)
+
+[node name="MenuTitle" type="Label" parent="UI/InventoryMenu" unique_id=45914619]
+offset_left = 50.0
+offset_top = 50.0
+scale = Vector2(0.4, 0.4)
+text = "Player Inventory"
+
+[node name="PlayerInventoryLabel" type="Label" parent="UI/InventoryMenu" unique_id=532890123]
+offset_left = 50.0
+offset_top = 100.0
 scale = Vector2(0.35, 0.35)
 text = "Honey Storage: 0.0 lbs"
 

@@ -79,7 +79,28 @@ func _update_ui_labels() -> void:
 		if resource_label:
 			resource_label.text = ""
 
-@onready var inventory_label: Label = get_node_or_null("PlayerInventoryLabel")
+@onready var inventory_menu: ColorRect = get_node_or_null("InventoryMenu")
+@onready var inventory_label: Label = get_node_or_null("InventoryMenu/PlayerInventoryLabel")
+
+@onready var controls_label: Label = get_node_or_null("ControlsLabel")
+
+var menu_open: bool = false
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_O:
+			toggle_menu()
+
+func toggle_menu() -> void:
+	menu_open = not menu_open
+	if inventory_menu:
+		inventory_menu.visible = menu_open
+		
+	var target_vis = not menu_open
+	if day_label: day_label.visible = target_vis
+	if resource_label: resource_label.visible = target_vis
+	if controls_label: controls_label.visible = target_vis
+	if next_day_button: next_day_button.visible = target_vis
 
 func update_player_inventory(amount: float) -> void:
 	if inventory_label:

@@ -12,8 +12,7 @@ func _draw() -> void:
     if not player or not tilemap:
         return
         
-    var target_global = player.global_position + (player.get("facing_direction") * 16.0)
-    var map_coords = tilemap.local_to_map(tilemap.to_local(target_global))
+    var map_coords = player.get_target_tile_coords(tilemap) if player.has_method("get_target_tile_coords") else Vector2i.ZERO
     var snapped_rect = Rect2(tilemap.map_to_local(map_coords) - Vector2(8, 8), Vector2(16, 16))
     
     if show_grid:
