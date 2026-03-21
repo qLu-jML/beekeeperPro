@@ -766,16 +766,25 @@ offset_bottom = 648.0
 color = Color(0.1, 0.1, 0.1, 0.8)
 
 [node name="MenuTitle" type="Label" parent="UI/InventoryMenu" unique_id=45914619]
-offset_left = 50.0
-offset_top = 50.0
+offset_left = 492.0
+offset_top = 150.0
 scale = Vector2(0.4, 0.4)
 text = "Player Inventory"
 
 [node name="PlayerInventoryLabel" type="Label" parent="UI/InventoryMenu" unique_id=532890123]
-offset_left = 50.0
-offset_top = 100.0
+offset_left = 492.0
+offset_top = 175.0
 scale = Vector2(0.35, 0.35)
 text = "Honey Storage: 0.0 lbs"
+
+[node name="GridContainer" type="GridContainer" parent="UI/InventoryMenu" unique_id=324901844]
+offset_left = 492.0
+offset_top = 200.0
+offset_right = 700.0
+offset_bottom = 260.0
+theme_override_constants/h_separation = 3
+theme_override_constants/v_separation = 3
+columns = 10
 
 [node name="ApiaryHive_1" parent="World" instance=ExtResource("1_sugp2")]
 position = Vector2(104, 200)

@@ -2,11 +2,67 @@ extends CharacterBody2D
 
 var player_honey: float = 0.0
 var facing_direction: Vector2 = Vector2.DOWN
-var last_x_dir: float = 1.0
 
-# Movement variables
-@export var speed: float = 200.0
-@export var friction: float = 500.0
+const INVENTORY_SIZE = 20
+const MAX_STACK = 20
+var inventory: Array = []
+
+func _ready():
+	inventory.resize(INVENTORY_SIZE)
+	inventory.fill(null)
+	add_item("seeds", 5)
+
+func update_hud_inventory() -> void:
+	var hud = get_node_or_null("../../UI")
+	if hud and hud.has_method("update_player_inventory"):
+		hud.update_player_inventory(player_honey, inventory)
+
+func add_item(item_name: String, amount: int) -> int:
+	for i in range(INVENTORY_SIZE):
+		if inventory[i] != null and inventory[i]["item"] == item_name:
+			var space = MAX_STACK - inventory[i]["count"]
+			if space > 0:
+				var add = min(space, amount)
+				inventory[i]["count"] += add
+				amount -= add
+				if amount <= 0:
+					update_hud_inventory()
+					return 0
+	if amount > 0:
+		for i in range(INVENTORY_SIZE):
+			if inventory[i] == null:
+				var add = min(MAX_STACK, amount)
+				inventory[i] = {"item": item_name, "count": add}
+				amount -= add
+				if amount <= 0:
+					update_hud_inventory()
+					return 0
+	update_hud_inventory()
+	return amount 
+
+func consume_item(item_name: String, amount: int) -> bool:
+	var total = 0
+	for i in range(INVENTORY_SIZE):
+		if inventory[i] != null and inventory[i]["item"] == item_name:
+			total += inventory[i]["count"]
+	if total < amount:
+		return false
+	for i in range(INVENTORY_SIZE):
+		if inventory[i] != null and inventory[i]["item"] == item_name:
+			if inventory[i]["count"] >= amount:
+				inventory[i]["count"] -= amount
+				if inventory[i]["count"] == 0:
+					inventory[i] = null
+				amount = 0
+				break
+			else:
+				amount -= inventory[i]["count"]
+				inventory[i] = null
+	update_hud_inventory()
+	return true
+
+# Movement variables (Snappy farm sim feel)
+@export var speed: float = 120.0
 
 # Animation
 @onready var animated_sprite = $AnimatedSprite2D
@@ -32,9 +88,13 @@ func _unhandled_input(event: InputEvent) -> void:
 				
 				# Determine if ground is dirt (Layer 1 has a tile)
 				if tilemap.get_cell_source_id(1, map_coords) != -1:
-					var new_flower = FLOWER_SCENE.instantiate()
-					new_flower.global_position = tilemap.to_global(tilemap.map_to_local(map_coords))
-					get_parent().add_child(new_flower)
+					if consume_item("seeds", 1):
+						var new_flower = FLOWER_SCENE.instantiate()
+						new_flower.global_position = tilemap.to_global(tilemap.map_to_local(map_coords))
+						get_parent().add_child(new_flower)
+						update_hud_inventory()
+					else:
+						print("Not enough seeds!")
 				else:
 					print("You must plant seeds on tilled dirt!")
 		elif event.keycode == KEY_E:
@@ -52,81 +112,66 @@ func _unhandled_input(event: InputEvent) -> void:
 							if amount > 0:
 								player_honey += amount
 								print("Harvested %.1f lbs of honey!" % amount)
-								
-								# UI is a sibling of World, so it's two steps up from Player
-								var hud = get_node_or_null("../../UI")
-								if hud and hud.has_method("update_player_inventory"):
-									hud.update_player_inventory(player_honey)
-								else:
-									print("Could not find HUD UI node!")
+								update_hud_inventory()
 								harvested = true
 								break
+								
+				# Check for harvestable flowers
+				var flowers = get_tree().get_nodes_in_group("flowers")
 				if not harvested:
-					print("No harvestable hive there!")
-
-func _ready():
-	pass
+					for flower in flowers:
+						if flower.global_position.distance_to(target_global) < 24.0:
+							if flower.has_method("harvest_seeds"):
+								var seeds = flower.harvest_seeds()
+								if seeds > 0:
+									var leftover = add_item("seeds", seeds)
+									print("Harvested %d seeds! (Leftover: %d)" % [seeds, leftover])
+									update_hud_inventory()
+									harvested = true
+									break
+									
+				if not harvested:
+					print("Nothing to interact with there!")
 
 func get_target_tile_coords(map: TileMap) -> Vector2i:
-	# Convert geometric bounds safely into grid tile coordinate space natively
-	var left = int((global_position.x - 7) / 16.0)
-	var right = int((global_position.x + 7) / 16.0)
-	var top = int((global_position.y - 23) / 16.0)
-	var bottom = int((global_position.y + 7) / 16.0)
-	
-	var target_x = int(global_position.x / 16.0)
-	var target_y = bottom
-	
-	if facing_direction.x > 0:
-		target_x = right + 1
-	elif facing_direction.x < 0:
-		target_x = left - 1
-		
-	if facing_direction.y > 0:
-		target_y = bottom + 1
-	elif facing_direction.y < 0:
-		target_y = top - 1
-		
-	return Vector2i(target_x, target_y)
+	var player_feet_local = map.to_local(global_position)
+	var current_tile = map.local_to_map(player_feet_local)
+	return current_tile + Vector2i(facing_direction)
 
 func _physics_process(delta):
 	# Get input direction
 	var input_vector = Vector2.ZERO
 	input_vector.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
 	input_vector.y = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
-	input_vector = input_vector.normalized()
 	
-	# Apply movement
+	# Apply snappy non-sliding movement
 	if input_vector != Vector2.ZERO:
+		input_vector = input_vector.normalized()
 		velocity = input_vector * speed
 		play_animation(input_vector)
 	else:
-		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+		velocity = Vector2.ZERO
 		if animated_sprite:
 			animated_sprite.stop()
-	
-	# Move the character (Godot 4 syntax - no parameters)
+			
 	move_and_slide()
 
 func play_animation(direction: Vector2):
 	if not animated_sprite:
 		return
-	
-	if direction.x != 0:
-		last_x_dir = sign(direction.x)
-	
-	# Determine which animation to play based on direction
+		
+	# Determine strictly 4-directional facing
 	if abs(direction.x) > abs(direction.y):
 		if direction.x > 0:
 			animated_sprite.play("walk_right")
-			facing_direction = Vector2(1, 0)
+			facing_direction = Vector2.RIGHT
 		else:
 			animated_sprite.play("walk_left")
-			facing_direction = Vector2(-1, 0)
+			facing_direction = Vector2.LEFT
 	else:
 		if direction.y > 0:
 			animated_sprite.play("walk_down")
-			facing_direction = Vector2(last_x_dir, 1)
+			facing_direction = Vector2.DOWN
 		else:
 			animated_sprite.play("walk_up")
-			facing_direction = Vector2(last_x_dir, -1)
+			facing_direction = Vector2.UP

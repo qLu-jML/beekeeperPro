@@ -1,0 +1,3 @@
+[2026-03-20 22:29:50 CST] Implemented a dynamically generated Inventory UI inside `scripts/ui/hud.gd` that shows a 10x2 grid when toggled with the "O" key. The UI elements were explicitly rescaled to match the engine's 16x16 pixel art tiles and properly fit within the 320x180 screen resolution with zero border separation.
+[2026-03-20 22:37:00 CST] Rewrote the targeter tile coordinates logic in scripts/core/player.gd to use strict integer tile snapping from the player's current physical map cell, matching classical farm sim momentum and resolving offset inaccuracies.
+[2026-03-20 22:40:00 CST] Fixed a bug where the Inventory UI was invisible on screen by replacing implicit CanvasLayer anchor presets in hud.gd with explicit Vector2 size and centering coordinates.
