@@ -3,10 +3,10 @@
 [ext_resource type="Script" uid="uid://dscx740va84wl" path="res://scenes/hives/hive.gd" id="1_6p62y"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_c8g37"]
-size = Vector2(32, 32)
+size = Vector2(16, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8u5me"]
-size = Vector2(32, 32)
+size = Vector2(16, 16)
 
 [node name="Hive" type="Node2D" unique_id=1189561247 groups=["hives"]]
 script = ExtResource("1_6p62y")
@@ -25,10 +25,10 @@ shape = SubResource("RectangleShape2D_8u5me")
 shape = SubResource("RectangleShape2D_8u5me")
 
 [node name="Label" type="Label" parent="."]
-offset_left = -30.0
-offset_top = -40.0
-offset_right = 30.0
-offset_bottom = -17.0
+offset_left = -20.0
+offset_top = -22.0
+offset_right = 20.0
+offset_bottom = -10.0
 horizontal_alignment = 1
 scale = Vector2(0.5, 0.5)
 

@@ -70,18 +70,30 @@ func consume_item(item_name: String, amount: int) -> bool:
 const HIVE_SCENE = preload("res://scenes/hive.tscn")
 const FLOWER_SCENE = preload("res://scenes/flowers/flowers.tscn")
 
+# Zone definitions in tile coordinates (col, row, width, height)
+const FLOWER_ZONE := Rect2i(15, 14, 10, 3)  # 10 wide x 3 tall flower field
+const APIARY_ZONE := Rect2i(4, 4, 8, 20)    # 8 wide x 20 tall apiary (3 tiles left of flower field)
+
 @onready var tilemap: TileMap = get_node_or_null("../TileMap")
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_H:
-			var new_hive = HIVE_SCENE.instantiate()
-			new_hive.global_position = global_position
-			get_parent().add_child(new_hive)
+			if tilemap:
+				var map_coords = get_target_tile_coords(tilemap)
+				if APIARY_ZONE.has_point(map_coords):
+					var new_hive = HIVE_SCENE.instantiate()
+					new_hive.global_position = tilemap.to_global(tilemap.map_to_local(map_coords))
+					get_parent().add_child(new_hive)
+				else:
+					print("Hives can only be placed inside the apiary!")
 		elif event.keycode == KEY_T:
 			if tilemap:
 				var map_coords = get_target_tile_coords(tilemap)
-				tilemap.set_cell(1, map_coords, 0, Vector2i(1, 3))
+				if FLOWER_ZONE.has_point(map_coords):
+					tilemap.set_cell(1, map_coords, 0, Vector2i(1, 3))
+				else:
+					print("You can only till soil inside the flower field!")
 		elif event.keycode == KEY_F:
 			if tilemap:
 				var map_coords = get_target_tile_coords(tilemap)
@@ -105,8 +117,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				var hives = get_tree().get_nodes_in_group("hive")
 				var harvested = false
 				for hive in hives:
-					# Large 32px tolerance guarantees overlapping any part of the 32x32 hive sprite triggers success
-					if hive.global_position.distance_to(target_global) < 32.0:
+					if hive.global_position.distance_to(target_global) < 16.0:
 						if hive.has_method("harvest_honey"):
 							var amount = hive.harvest_honey()
 							if amount > 0:

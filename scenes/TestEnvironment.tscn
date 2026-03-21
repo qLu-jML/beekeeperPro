@@ -761,27 +761,33 @@ O - Open Menu"
 
 [node name="InventoryMenu" type="ColorRect" parent="UI" unique_id=882319082]
 visible = false
-offset_right = 1152.0
-offset_bottom = 648.0
+offset_right = 320.0
+offset_bottom = 180.0
 color = Color(0.1, 0.1, 0.1, 0.8)
 
 [node name="MenuTitle" type="Label" parent="UI/InventoryMenu" unique_id=45914619]
-offset_left = 492.0
-offset_top = 150.0
-scale = Vector2(0.4, 0.4)
+offset_left = 60.0
+offset_top = 28.0
+offset_right = 260.0
+offset_bottom = 38.0
+theme_override_font_sizes/font_size = 8
+horizontal_alignment = 1
 text = "Player Inventory"
 
 [node name="PlayerInventoryLabel" type="Label" parent="UI/InventoryMenu" unique_id=532890123]
-offset_left = 492.0
-offset_top = 175.0
-scale = Vector2(0.35, 0.35)
+offset_left = 60.0
+offset_top = 40.0
+offset_right = 260.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 7
+horizontal_alignment = 1
 text = "Honey Storage: 0.0 lbs"
 
 [node name="GridContainer" type="GridContainer" parent="UI/InventoryMenu" unique_id=324901844]
-offset_left = 492.0
-offset_top = 200.0
-offset_right = 700.0
-offset_bottom = 260.0
+offset_left = 76.0
+offset_top = 54.0
+offset_right = 243.0
+offset_bottom = 85.0
 theme_override_constants/h_separation = 3
 theme_override_constants/v_separation = 3
 columns = 10
