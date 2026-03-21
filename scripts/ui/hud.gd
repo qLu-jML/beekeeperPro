@@ -170,7 +170,7 @@ func _update_ui_labels() -> void:
 @onready var inventory_grid: GridContainer = get_node_or_null("InventoryMenu/GridContainer")
 var slots: Array = []
 
-@onready var controls_label: Label = get_node_or_null("ControlsLabel")
+@onready var controls_label: Label = get_node_or_null("InventoryMenu/ControlsLabel")
 
 var menu_open: bool = false
 
@@ -187,20 +187,26 @@ func toggle_menu() -> void:
 	var target_vis = not menu_open
 	if day_label: day_label.visible = target_vis
 	if resource_label: resource_label.visible = target_vis
-	if controls_label: controls_label.visible = target_vis
 	if next_day_button: next_day_button.visible = target_vis
 
-func update_player_inventory(honey: float, inv_array: Array = []) -> void:
+func update_player_inventory(total_honey: int, inv_array: Array = []) -> void:
 	if inventory_label:
-		inventory_label.text = "Honey Storage: %.1f lbs" % honey
-		
+		inventory_label.text = "Honey: %d lbs" % total_honey
+
 	for i in range(slots.size()):
 		if i < inv_array.size() and inv_array[i] != null:
 			var item = inv_array[i]
-			if item["item"] == "seeds":
-				slots[i].get_child(1).text = "x" + str(item["count"])
-				slots[i].get_child(2).text = "Seeds"
-				slots[i].color = Color(0.3, 0.5, 0.3, 1.0)
+			slots[i].get_child(1).text = "x%d" % item["count"]
+			match item["item"]:
+				"seeds":
+					slots[i].get_child(2).text = "Seeds"
+					slots[i].color = Color(0.3, 0.5, 0.3, 1.0)
+				"honey":
+					slots[i].get_child(2).text = "Honey"
+					slots[i].color = Color(0.6, 0.45, 0.1, 1.0)
+				_:
+					slots[i].get_child(2).text = item["item"].capitalize()
+					slots[i].color = Color(0.35, 0.35, 0.35, 1.0)
 		else:
 			slots[i].get_child(1).text = ""
 			slots[i].get_child(2).text = ""

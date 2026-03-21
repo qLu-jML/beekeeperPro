@@ -38,7 +38,7 @@ animation = &"idle"
 shape = SubResource("CapsuleShape2D_dovo2")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(1.35, 1.35)
+zoom = Vector2(1.5, 1.5)
 position_smoothing_enabled = true
 position_smoothing_speed = 5.0
 drag_horizontal_enabled = true

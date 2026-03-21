@@ -34,8 +34,13 @@ var days_elapsed: int = 0
 
 func _ready() -> void:
 	add_to_group("hive")
-	# ... rest of your code
 	print("Hive initialized with %d bees" % colony_population)
+	if stat_label:
+		stat_label.add_theme_font_size_override("font_size", 4)
+		stat_label.position = Vector2(-16, -28)
+		stat_label.custom_minimum_size = Vector2(32, 0)
+		stat_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		stat_label.z_index = 5
 	update_label()
 
 func advance_day() -> void:
@@ -106,17 +111,13 @@ func harvest_honey() -> float:
 
 func update_label() -> void:
 	if stat_label:
-		stat_label.text = "Q:%s|E:%d\nN:%d|W:%d|D:%d\nHon:%.1f\nMites:%d|Surv:%d%%\nCrashes:%d|Starves:%d" % [
+		stat_label.text = "Q:%s E:%d\nW:%d M:%d\nHon:%.1f S:%d%%" % [
 			"Y" if queen else "N",
 			eggs,
-			nurseBee,
 			workerBee,
-			drone,
-			honey_stores,
 			int(mites),
-			int(survival_rate * 100.0),
-			mite_crashes,
-			starvation_events
+			honey_stores,
+			int(survival_rate * 100.0)
 		]
 
 func get_season_factor(day: int) -> float:
